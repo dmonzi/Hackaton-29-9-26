@@ -1,0 +1,256 @@
+{
+  "modelos/casillas.pt": {
+    "sinteticos": {
+      "tableros": 500,
+      "acierto_casilla": 0.999,
+      "tableros_exactos": 0.968
+    },
+    "once": [
+      {
+        "archivo": "tablero1.png",
+        "exacto": true,
+        "fallos": []
+      },
+      {
+        "archivo": "tablero2.png",
+        "exacto": true,
+        "fallos": []
+      },
+      {
+        "archivo": "tablero3.png",
+        "exacto": true,
+        "fallos": []
+      },
+      {
+        "archivo": "tablero4.png",
+        "exacto": true,
+        "fallos": []
+      },
+      {
+        "archivo": "tablero5.png",
+        "exacto": true,
+        "fallos": []
+      },
+      {
+        "archivo": "tablero6.png",
+        "exacto": true,
+        "fallos": []
+      },
+      {
+        "archivo": "diagrama1.png",
+        "exacto": false,
+        "fallos": [
+          "a7: esperaba p, vio vacia",
+          "g7: esperaba p, vio r",
+          "a4: esperaba Q, vio q",
+          "h1: esperaba R, vio vacia"
+        ]
+      },
+      {
+        "archivo": "diagrama2.png",
+        "exacto": false,
+        "fallos": [
+          "b6: esperaba p, vio n",
+          "h6: esperaba B, vio b"
+        ]
+      },
+      {
+        "archivo": "diagrama5.png",
+        "exacto": false,
+        "fallos": [
+          "a8: esperaba r, vio vacia",
+          "a1: esperaba R, vio vacia",
+          "c1: esperaba B, vio b",
+          "d1: esperaba Q, vio q",
+          "g1: esperaba K, vio R"
+        ]
+      },
+      {
+        "archivo": "diagrama23.png",
+        "exacto": false,
+        "fallos": [
+          "a7: esperaba p, vio vacia",
+          "h7: esperaba k, vio vacia",
+          "h6: esperaba p, vio vacia",
+          "c5: esperaba p, vio n",
+          "f5: esperaba Q, vio q",
+          "g5: esperaba p, vio r",
+          "h3: esperaba K, vio R"
+        ]
+      }
+    ]
+  },
+  "modelos/casillas_medida.pt": {
+    "sinteticos": {
+      "tableros": 500,
+      "acierto_casilla": 0.9986,
+      "tableros_exactos": 0.956
+    },
+    "once": [
+      {
+        "archivo": "tablero4.png",
+        "exacto": true,
+        "fallos": []
+      },
+      {
+        "archivo": "tablero6.png",
+        "exacto": true,
+        "fallos": []
+      },
+      {
+        "archivo": "diagrama23.png",
+        "exacto": false,
+        "fallos": [
+          "f5: esperaba Q, vio q (confianza 0.69, se diría como duda)"
+        ]
+      }
+    ]
+  },
+  "modelos/casillas_6000.pt": {
+    "sinteticos": {
+      "tableros": 500,
+      "acierto_casilla": 0.999,
+      "tableros_exactos": 0.972
+    },
+    "once": [
+      {
+        "archivo": "tablero1.png",
+        "exacto": true,
+        "fallos": []
+      },
+      {
+        "archivo": "tablero2.png",
+        "exacto": true,
+        "fallos": []
+      },
+      {
+        "archivo": "tablero3.png",
+        "exacto": true,
+        "fallos": []
+      },
+      {
+        "archivo": "tablero4.png",
+        "exacto": true,
+        "fallos": []
+      },
+      {
+        "archivo": "tablero5.png",
+        "exacto": true,
+        "fallos": []
+      },
+      {
+        "archivo": "tablero6.png",
+        "exacto": true,
+        "fallos": []
+      },
+      {
+        "archivo": "diagrama1.png",
+        "exacto": false,
+        "fallos": [
+          "a7: esperaba p, vio vacia",
+          "g7: esperaba p, vio r",
+          "a4: esperaba Q, vio q",
+          "a2: esperaba P, vio vacia",
+          "h1: esperaba R, vio vacia"
+        ]
+      },
+      {
+        "archivo": "diagrama2.png",
+        "exacto": false,
+        "fallos": [
+          "h7: esperaba p, vio vacia",
+          "h6: esperaba B, vio vacia",
+          "d2: esperaba K, vio R"
+        ]
+      },
+      {
+        "archivo": "diagrama5.png",
+        "exacto": false,
+        "fallos": [
+          "a8: esperaba r, vio vacia",
+          "g8: esperaba k, vio vacia",
+          "g7: esperaba p, vio r",
+          "h7: esperaba p, vio vacia",
+          "a6: esperaba p, vio vacia",
+          "e5: esperaba p, vio vacia",
+          "b3: esperaba B, vio b",
+          "c1: esperaba B, vio vacia",
+          "d1: esperaba Q, vio q",
+          "g1: esperaba K, vio R"
+        ]
+      },
+      {
+        "archivo": "diagrama23.png",
+        "exacto": false,
+        "fallos": [
+          "a7: esperaba p, vio vacia",
+          "h7: esperaba k, vio vacia",
+          "h6: esperaba p, vio n",
+          "c5: esperaba p, vio n",
+          "f5: esperaba Q, vio q",
+          "g5: esperaba p, vio r",
+          "h3: esperaba K, vio vacia"
+        ]
+      }
+    ]
+  },
+  "modelos/casillas_v2.pt": {
+    "sinteticos": {
+      "tableros": 500,
+      "acierto_casilla": 0.9988,
+      "tableros_exactos": 0.96
+    },
+    "once": [
+      {
+        "archivo": "tablero1.png",
+        "exacto": true,
+        "fallos": []
+      },
+      {
+        "archivo": "tablero2.png",
+        "exacto": true,
+        "fallos": []
+      },
+      {
+        "archivo": "tablero3.png",
+        "exacto": true,
+        "fallos": []
+      },
+      {
+        "archivo": "tablero4.png",
+        "exacto": true,
+        "fallos": []
+      },
+      {
+        "archivo": "tablero5.png",
+        "exacto": true,
+        "fallos": []
+      },
+      {
+        "archivo": "tablero6.png",
+        "exacto": true,
+        "fallos": []
+      },
+      {
+        "archivo": "diagrama1.png",
+        "exacto": true,
+        "fallos": []
+      },
+      {
+        "archivo": "diagrama2.png",
+        "exacto": true,
+        "fallos": []
+      },
+      {
+        "archivo": "diagrama5.png",
+        "exacto": true,
+        "fallos": []
+      },
+      {
+        "archivo": "diagrama23.png",
+        "exacto": true,
+        "fallos": []
+      }
+    ]
+  }
+}

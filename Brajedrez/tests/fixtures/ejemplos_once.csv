@@ -1,0 +1,11 @@
+archivo,estilo,girado,fen,resaltadas,flechas
+tablero1.png,digital,0,r1bqk2r/ppp2p2/2np1n1p/2b1p1p1/2B1P3/2NP1NB1/PPP2PPP/R2QK2R,amarillo:g3 h4,
+tablero2.png,digital,1,r1bqkb1r/pp3ppp/3p4/4p3/4PBn1/2N5/PPP2PPP/R2QKB1R,amarillo:d1 d4,d4-d1
+tablero3.png,digital,0,rnbqkb1r/pppp2p1/4pn1p/5pB1/2PP4/5N2/PP2PPPP/RN1QKB1R,amarillo:h6 h7,h7-h6
+tablero4.png,digital,0,k7/p7/1p6/6p1/P4pPp/1P3P1P/2P5/7K,,
+tablero5.png,digital,0,1q4k1/3b1p2/1r1b1p1p/2pPp2N/2P1P3/2BQ3P/r2N2P1/2R3K1,rojo:f6;amarillo:g3 h5,c1-f1 d3-g3 h5-f6
+tablero6.png,digital,0,1rb2rk1/1nq1bppp/3p1n2/1ppPp3/1P2P3/2P2N1P/2BN1PP1/R1BQR1K1,amarillo:b7 d8;rojo:c1,d2-b1 d2-b3 d2-f1
+diagrama1.png,libro,0,r3kb1r/pp1qpppp/2n5/1Bp5/Q3P1b1/2N2N2/PP1PKPPP/2R4R,,
+diagrama2.png,libro,0,8/7p/1pn1k1pB/1p6/2bp4/P6P/1P1K2P1/4N3,,
+diagrama5.png,libro,0,r2q1rk1/2p1bppp/p1np1n2/1p2p3/3PP1b1/1BP2N2/PP3PPP/RNBQR1K1,,
+diagrama23.png,libro,0,8/p3r2k/P5qp/2pP1Qp1/2P1p1P1/4b1PK/4N3/5R2,,

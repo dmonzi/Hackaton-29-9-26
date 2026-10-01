@@ -1,0 +1,19 @@
+# Dataset, casillas preparadas (.npz) y modelos descartados: se regeneran (ver Brajedrez/docs/LEEME_tecnico.md)
+Brajedrez/datos/
+
+# Entorno local
+.venv/
+venv/
+activar-venv.txt
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Sistema y editor
+.vscode/
+Thumbs.db
+desktop.ini
+.DS_Store
+*.log

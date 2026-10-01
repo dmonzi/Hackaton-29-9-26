@@ -1,0 +1,37 @@
+{
+  "modelos/humo.pt": {
+    "acierto_validacion": 0.5888,
+    "epocas": 1,
+    "casillas": 14085,
+    "desde": null,
+    "datos": "humo.npz"
+  },
+  "modelos/casillas.pt": {
+    "acierto_validacion": 0.9918,
+    "epocas": 8,
+    "casillas": 254289,
+    "desde": null,
+    "datos": "casillas.npz"
+  },
+  "modelos/casillas_medida.pt": {
+    "acierto_validacion": 0.9944,
+    "epocas": 3,
+    "casillas": 38960,
+    "desde": "modelos/casillas.pt",
+    "datos": "mezcla.npz"
+  },
+  "modelos/casillas_v2.pt": {
+    "acierto_validacion": 0.9939,
+    "epocas": 3,
+    "casillas": 42800,
+    "desde": "modelos/casillas.pt",
+    "datos": "mezcla.npz"
+  },
+  "modelos/casillas_v3.pt": {
+    "acierto_validacion": 0.9849,
+    "epocas": 3,
+    "casillas": 196040,
+    "desde": "modelos/casillas_v2.pt",
+    "datos": "datos/mezcla.npz"
+  }
+}

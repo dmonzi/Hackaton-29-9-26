@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Diagramas de ajedrez en voz y en braille</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --papel: #ffffff;
+    --tinta: #000000;
+    --suave: #4a4a4a;
+    --raya: #6b6b6b;
+    --accion: #0b3d91;
+    --sobre-accion: #ffffff;
+    --leyendo: #ffe94d;
+    --error: #a4161a;
+    --fondo-aviso: #f2f2f2;
+    --letra: "Atkinson Hyperlegible", Verdana, "Segoe UI", sans-serif;
+    --braille: "Segoe UI Symbol", "DejaVu Sans", "Apple Braille", sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --papel: #000000; --tinta: #ffffff; --suave: #c8c8c8; --raya: #9a9a9a;
+      --accion: #9cc0ff; --sobre-accion: #000000; --error: #ff8a80; --fondo-aviso: #1c1c1c;
+    }
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html { font-size: 125%; scroll-padding-top: 8rem; }
+  body { margin: 0; background: var(--papel); color: var(--tinta); font-family: var(--letra); line-height: 1.5; }
+  .saltar { position: absolute; left: -999px; top: 0; background: var(--accion); color: var(--sobre-accion); padding: .5rem 1rem; z-index: 10; }
+  .saltar:focus { left: 1rem; }
+  main { max-width: 42rem; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+  h1 { font-size: 2.1rem; line-height: 1.15; margin: 0 0 .75rem; letter-spacing: -0.01em; }
+  h2 { font-size: 1.4rem; margin: 2.5rem 0 .75rem; }
+  h3 { font-size: 1.15rem; margin: 0 0 .5rem; }
+  p { margin: 0 0 .75rem; }
+  .entradilla { color: var(--suave); max-width: 36rem; }
+  :focus-visible { outline: 3px solid var(--accion); outline-offset: 3px; }
+
+  /* Zona de subida: el rayado de las casillas oscuras de los diagramas de libro */
+  .zona { display: block; position: relative; padding: 1.75rem 1.5rem; cursor: pointer;
+          border: 14px solid transparent; border-radius: 4px;
+          background:
+            linear-gradient(var(--papel), var(--papel)) padding-box,
+            repeating-linear-gradient(45deg, var(--raya) 0 2px, transparent 2px 7px) border-box; }
+  .zona:focus-within { outline: 3px solid var(--accion); outline-offset: 3px; }
+  .zona.encima { background:
+            linear-gradient(var(--papel), var(--papel)) padding-box,
+            repeating-linear-gradient(45deg, var(--accion) 0 3px, transparent 3px 7px) border-box; }
+  .zona strong { display: block; font-size: 1.2rem; }
+  .zona span { color: var(--suave); }
+  .oculto { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .lista-archivos { list-style: none; padding: 0; margin: 1rem 0; }
+  .lista-archivos li { display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+                       padding: .4rem 0; border-bottom: 1px solid var(--raya); }
+  .lista-archivos li span { overflow-wrap: anywhere; }
+
+  button, .boton { font: inherit; font-size: 1rem; padding: .55rem 1.1rem; border-radius: 6px; cursor: pointer;
+                   border: 2px solid var(--accion); background: var(--papel); color: var(--accion); text-decoration: none;
+                   display: inline-block; }
+  button.principal { background: var(--accion); color: var(--sobre-accion); font-weight: 700; }
+  button:disabled { opacity: .45; cursor: not-allowed; }
+  button.pequeno { font-size: .85rem; padding: .3rem .7rem; }
+  .acciones { display: flex; flex-wrap: wrap; gap: .6rem; margin: .75rem 0; }
+
+  #estado { min-height: 1.5em; font-weight: 700; margin-top: 1rem; }
+  .aviso-modelo { background: var(--fondo-aviso); border-left: 6px solid var(--raya); padding: .75rem 1rem; margin: 1.25rem 0 0; }
+  .avisos { color: var(--error); }
+
+  /* Lector de voz: se queda visible mientras se recorren los resultados */
+  .lector { position: sticky; top: 0; z-index: 5; background: var(--papel); border-bottom: 3px solid var(--tinta);
+            padding: .75rem 0; margin-top: 2rem; }
+  .lector h2 { margin: 0 0 .5rem; font-size: 1.1rem; }
+  .lector .controles { display: flex; flex-wrap: wrap; gap: .6rem; align-items: center; }
+  .lector label { font-size: .9rem; display: flex; align-items: center; gap: .4rem; }
+  .lector select, .lector input[type=range] { font: inherit; font-size: .9rem; accent-color: var(--accion); }
+  .lector select { max-width: 13rem; padding: .3rem; }
+
+  .vacio { color: var(--suave); }
+  article { padding: 1.5rem 0; border-bottom: 1px solid var(--raya); }
+  article .cuerpo { display: grid; grid-template-columns: 12rem 1fr; gap: 1.25rem; align-items: start; }
+  article img { width: 100%; height: auto; border: 1px solid var(--raya); image-rendering: auto; }
+  .origen { color: var(--suave); font-size: .9rem; margin-bottom: .5rem; }
+  .texto p { margin: 0 0 .35rem; padding: .1rem .3rem; border-radius: 3px; }
+  .texto p.leyendo { background: var(--leyendo); color: #000; }
+  .error { color: var(--error); font-weight: 700; }
+  .nota { font-size: .9rem; color: var(--suave); }
+  details { margin-top: .6rem; }
+  summary { cursor: pointer; font-weight: 700; padding: .2rem 0; }
+  pre.braille { font-family: var(--braille); font-size: 1.35rem; line-height: 1.6; white-space: pre-wrap;
+                background: var(--fondo-aviso); padding: .75rem; margin: .5rem 0; }
+  code.fen { overflow-wrap: anywhere; font-size: .9rem; }
+  @media (max-width: 36rem) {
+    html { font-size: 112.5%; }
+    h1 { font-size: 1.7rem; }
+    html { scroll-padding-top: 1rem; }
+    .lector { position: static; }
+    article .cuerpo { grid-template-columns: 1fr; }
+    article img { max-width: 16rem; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+</style>
+</head>
+<body>
+<a class="saltar" href="#resultados-titulo">Ir a los resultados</a>
+<main>
+  <h1>Diagramas de ajedrez, en voz y en braille</h1>
+  <p class="entradilla">Sube una captura, una foto, un PDF o un documento de Word. La página encuentra cada diagrama y te dice dónde está cada pieza, qué casillas están resaltadas y qué flechas hay.</p>
+  <p id="aviso-modelo" class="aviso-modelo" hidden></p>
+
+  <section aria-labelledby="subir-titulo">
+    <h2 id="subir-titulo">Sube tus diagramas</h2>
+    <label class="zona" id="zona" for="archivos">
+      <strong>Elige archivos o arrástralos aquí</strong>
+      <span>Imágenes (PNG, JPG), PDF o Word (.docx). En el móvil también puedes hacer una foto.</span>
+      <input class="oculto" id="archivos" type="file" multiple accept="image/*,.pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
+    </label>
+    <ul class="lista-archivos" id="lista" aria-label="Archivos elegidos"></ul>
+    <div class="acciones">
+      <button class="principal" id="analizar" disabled>Analizar diagramas</button>
+      <button id="vaciar" hidden>Quitar todos</button>
+    </div>
+    <p id="estado" role="status" aria-live="polite"></p>
+    <ul id="avisos" class="avisos"></ul>
+  </section>
+
+  <section class="lector" aria-labelledby="lector-titulo">
+    <h2 id="lector-titulo">Lector de voz</h2>
+    <div class="controles">
+      <button id="leer-todo" disabled>Leer todo</button>
+      <button id="pausar" disabled>Pausar</button>
+      <button id="parar" disabled>Parar</button>
+      <label>Velocidad <input id="velocidad" type="range" min="0.6" max="1.6" step="0.1" value="1"> <output id="velocidad-valor" for="velocidad">1,0</output></label>
+      <label>Voz <select id="voz"></select></label>
+    </div>
+    <p id="sin-voz" class="nota" hidden>Este navegador no tiene voz. El texto de los resultados se puede leer con tu lector de pantalla.</p>
+  </section>
+
+  <section aria-labelledby="resultados-titulo">
+    <h2 id="resultados-titulo" tabindex="-1">Resultados</h2>
+    <div id="resultados" aria-busy="false">
+      <p class="vacio">Aún no hay resultados. Sube un diagrama y pulsa «Analizar diagramas».</p>
+    </div>
+  </section>
+</main>
+
+<template id="plantilla-diagrama">
+  <article>
+    <h3></h3>
+    <p class="origen"></p>
+    <div class="cuerpo">
+      <img alt="">
+      <div>
+        <p class="nota aviso-prueba" hidden></p>
+        <div class="texto"></div>
+        <div class="acciones">
+          <button class="leer">Leer este diagrama</button>
+          <button class="copiar-texto">Copiar texto</button>
+        </div>
+        <details class="det-braille">
+          <summary>Transcripción braille</summary>
+          <pre class="braille" lang="es"></pre>
+          <div class="acciones">
+            <button class="pequeno copiar-braille">Copiar braille</button>
+            <button class="pequeno descargar-braille">Descargar braille (.txt)</button>
+          </div>
+        </details>
+        <details class="det-fen">
+          <summary>Posición en FEN</summary>
+          <p><code class="fen"></code></p>
+          <div class="acciones">
+            <button class="pequeno copiar-fen">Copiar FEN</button>
+            <a class="boton pequeno lichess" target="_blank" rel="noopener">Comprobar en Lichess</a>
+          </div>
+        </details>
+      </div>
+    </div>
+  </article>
+</template>
+
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const entrada = $('archivos'), zona = $('zona'), lista = $('lista'), botonAnalizar = $('analizar');
+  const botonVaciar = $('vaciar'), estado = $('estado'), avisos = $('avisos'), resultados = $('resultados');
+  let elegidos = [];
+
+  // ---------- Estado del servidor ----------
+  fetch('/api/estado').then(r => r.json()).then(e => {
+    const aviso = $('aviso-modelo');
+    if (e.prueba) {
+      aviso.textContent = 'Modo prueba: sin modelo entrenado, solo se reconocen los 10 diagramas de ejemplo de ONCE.';
+      aviso.hidden = false;
+    } else if (!e.modelo) {
+      aviso.textContent = 'Todavía no hay modelo entrenado: la página encuentra los tableros, pero aún no puede leer las piezas.';
+      aviso.hidden = false;
+    }
+  }).catch(() => {});
+
+  // ---------- Subida ----------
+  function anadir(archivos) {
+    for (const f of archivos) {
+      if (!elegidos.some(e => e.name === f.name && e.size === f.size)) elegidos.push(f);
+    }
+    pintarLista();
+    estado.textContent = elegidos.length === 1 ? '1 archivo listo para analizar.' : `${elegidos.length} archivos listos para analizar.`;
+  }
+  function pintarLista() {
+    lista.innerHTML = '';
+    elegidos.forEach((f, i) => {
+      const li = document.createElement('li');
+      const nombre = document.createElement('span');
+      nombre.textContent = f.name;
+      const quitar = document.createElement('button');
+      quitar.className = 'pequeno';
+      quitar.textContent = 'Quitar';
+      quitar.setAttribute('aria-label', `Quitar ${f.name}`);
+      quitar.addEventListener('click', () => {
+        elegidos.splice(i, 1);
+        pintarLista();
+        estado.textContent = `${f.name} quitado.`;
+        (lista.querySelector('button') || entrada).focus();
+      });
+      li.append(nombre, quitar);
+      lista.append(li);
+    });
+    botonAnalizar.disabled = elegidos.length === 0;
+    botonVaciar.hidden = elegidos.length < 2;
+  }
+  entrada.addEventListener('change', () => { anadir(entrada.files); entrada.value = ''; });
+  ['dragenter', 'dragover'].forEach(ev => zona.addEventListener(ev, e => { e.preventDefault(); zona.classList.add('encima'); }));
+  ['dragleave', 'drop'].forEach(ev => zona.addEventListener(ev, e => { e.preventDefault(); zona.classList.remove('encima'); }));
+  zona.addEventListener('drop', e => anadir(e.dataTransfer.files));
+  botonVaciar.addEventListener('click', () => { elegidos = []; pintarLista(); estado.textContent = 'Lista vacía.'; entrada.focus(); });
+
+  const aBase64 = (f) => new Promise((ok, mal) => {
+    const lector = new FileReader();
+    lector.onload = () => ok(String(lector.result).split(',')[1]);
+    lector.onerror = () => mal(lector.error);
+    lector.readAsDataURL(f);
+  });
+
+  botonAnalizar.addEventListener('click', async () => {
+    parar();
+    botonAnalizar.disabled = true;
+    resultados.setAttribute('aria-busy', 'true');
+    avisos.innerHTML = '';
+    estado.textContent = elegidos.length === 1 ? 'Analizando 1 archivo…' : `Analizando ${elegidos.length} archivos…`;
+    try {
+      const archivos = await Promise.all(elegidos.map(async f => ({ nombre: f.name, datos: await aBase64(f) })));
+      const r = await fetch('/api/analizar', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ archivos })
+      });
+      const datos = await r.json();
+      if (!r.ok) throw new Error(datos.error || `Error ${r.status}`);
+      pintarResultados(datos);
+    } catch (e) {
+      estado.textContent = `No se ha podido analizar: ${e.message}. Comprueba que el servidor sigue en marcha y vuelve a pulsar «Analizar diagramas».`;
+    } finally {
+      botonAnalizar.disabled = elegidos.length === 0;
+      resultados.setAttribute('aria-busy', 'false');
+    }
+  });
+
+  // ---------- Resultados ----------
+  function copiar(texto, que) {
+    const hecho = () => { estado.textContent = `${que} copiado.`; };
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(texto).then(hecho);
+    } else {
+      const area = document.createElement('textarea');
+      area.value = texto; document.body.append(area); area.select();
+      document.execCommand('copy'); area.remove(); hecho();
+    }
+  }
+  function descargar(texto, nombre) {
+    const url = URL.createObjectURL(new Blob([texto], { type: 'text/plain;charset=utf-8' }));
+    const a = document.createElement('a');
+    a.href = url; a.download = nombre; document.body.append(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  function pintarResultados(datos) {
+    resultados.innerHTML = '';
+    (datos.avisos || []).forEach(t => { const li = document.createElement('li'); li.textContent = t; avisos.append(li); });
+    const plantilla = $('plantilla-diagrama');
+    datos.diagramas.forEach(d => {
+      const art = plantilla.content.firstElementChild.cloneNode(true);
+      const titulo = `Diagrama ${d.id}`;
+      art.querySelector('h3').textContent = titulo;
+      art.setAttribute('aria-label', titulo);
+      art.querySelector('.origen').textContent = `Origen: ${d.origen}`;
+      const img = art.querySelector('img');
+      img.src = d.miniatura;
+      img.alt = `Imagen del ${titulo.toLowerCase()}; su descripción está a continuación.`;
+      const texto = art.querySelector('.texto');
+      if (d.error) {
+        const p = document.createElement('p');
+        p.className = 'error'; p.textContent = d.error;
+        texto.append(p);
+        art.querySelector('.copiar-texto').hidden = true;
+        art.querySelector('.det-braille').hidden = true;
+        if (!d.fen) art.querySelector('.det-fen').hidden = true;
+      } else {
+        d.audio.split('\n').forEach(linea => {
+          const p = document.createElement('p'); p.textContent = linea; texto.append(p);
+        });
+        art.querySelector('.braille').textContent = d.braille;
+        art.querySelector('.braille').setAttribute('aria-label', `Transcripción braille del ${titulo.toLowerCase()}`);
+        art.querySelector('.copiar-texto').addEventListener('click', () => copiar(d.audio, 'Texto'));
+        art.querySelector('.copiar-braille').addEventListener('click', () => copiar(d.braille, 'Braille'));
+        art.querySelector('.descargar-braille').addEventListener('click', () => descargar(d.braille, `diagrama-${d.id}-braille.txt`));
+      }
+      if (d.aviso) { const n = art.querySelector('.aviso-prueba'); n.textContent = d.aviso; n.hidden = false; }
+      if (d.fen) {
+        art.querySelector('.fen').textContent = d.fen;
+        art.querySelector('.copiar-fen').addEventListener('click', () => copiar(d.fen, 'FEN'));
+        art.querySelector('.lichess').href = 'https://lichess.org/editor/' + d.fen;
+      }
+      art.querySelector('.leer').addEventListener('click', () => leer([art]));
+      resultados.append(art);
+    });
+    const n = datos.diagramas.length, errores = datos.diagramas.filter(d => d.error).length;
+    if (n === 0) {
+      resultados.innerHTML = '<p class="vacio">No se ha encontrado ningún diagrama. Prueba con una imagen en la que el tablero se vea entero.</p>';
+    }
+    let resumen = n === 1 ? 'Listo: 1 diagrama encontrado.' : `Listo: ${n} diagramas encontrados.`;
+    if (errores) resumen += errores === 1 ? ' 1 no se ha podido leer.' : ` ${errores} no se han podido leer.`;
+    if (datos.avisos && datos.avisos.length) resumen += ' Hay avisos debajo.';
+    estado.textContent = resumen;
+    $('leer-todo').disabled = n === 0 || !('speechSynthesis' in window);
+    $('resultados-titulo').focus();
+  }
+
+  // ---------- Lector de voz (solo el texto, nunca el braille) ----------
+  const hayVoz = 'speechSynthesis' in window;
+  const selVoz = $('voz'), velocidad = $('velocidad'), botonPausar = $('pausar'), botonParar = $('parar');
+  let cola = [], turno = 0, ronda = 0;
+
+  function poblarVoces() {
+    const voces = speechSynthesis.getVoices().filter(v => v.lang.toLowerCase().startsWith('es'));
+    const actual = selVoz.value;
+    selVoz.innerHTML = '';
+    voces.forEach(v => {
+      const o = document.createElement('option');
+      o.value = v.name; o.textContent = `${v.name} (${v.lang})`; selVoz.append(o);
+    });
+    if (!voces.length) { const o = document.createElement('option'); o.value = ''; o.textContent = 'Voz del sistema'; selVoz.append(o); }
+    const preferida = voces.find(v => v.name === actual) || voces.find(v => v.lang === 'es-ES') || voces[0];
+    if (preferida) selVoz.value = preferida.name;
+  }
+  if (hayVoz) { poblarVoces(); speechSynthesis.addEventListener('voiceschanged', poblarVoces); }
+  else { $('sin-voz').hidden = false; selVoz.disabled = true; velocidad.disabled = true; }
+
+  velocidad.addEventListener('input', () => { $('velocidad-valor').textContent = Number(velocidad.value).toFixed(1).replace('.', ','); });
+
+  function desmarcar() { document.querySelectorAll('.texto p.leyendo').forEach(p => p.classList.remove('leyendo')); }
+  function leer(articulos) {
+    if (!hayVoz) return;
+    parar();
+    cola = [];
+    articulos.forEach(a => {
+      cola.push({ texto: a.querySelector('h3').textContent + '.', el: null });
+      a.querySelectorAll('.texto p').forEach(p => cola.push({ texto: p.textContent, el: p }));
+    });
+    turno = 0;
+    const mia = ++ronda;
+    botonPausar.disabled = false; botonParar.disabled = false; botonPausar.textContent = 'Pausar';
+    decir(mia);
+  }
+  function decir(mia) {
+    if (mia !== ronda) return;
+    desmarcar();
+    if (turno >= cola.length) { fin(); return; }
+    const { texto, el } = cola[turno];
+    if (el) { el.classList.add('leyendo'); el.scrollIntoView({ block: 'nearest' }); }
+    const u = new SpeechSynthesisUtterance(texto);
+    u.lang = 'es-ES';
+    u.rate = Number(velocidad.value);
+    const v = speechSynthesis.getVoices().find(x => x.name === selVoz.value);
+    if (v) u.voice = v;
+    u.onend = () => { turno++; decir(mia); };
+    u.onerror = (e) => {
+      if (mia !== ronda || e.error === 'interrupted' || e.error === 'canceled') return;
+      fin();
+      estado.textContent = 'La voz del navegador no está disponible. Puedes leer el texto con tu lector de pantalla.';
+    };
+    speechSynthesis.speak(u);
+  }
+  function fin() { desmarcar(); botonPausar.disabled = true; botonParar.disabled = true; botonPausar.textContent = 'Pausar'; }
+  function parar() { ronda++; if (hayVoz) speechSynthesis.cancel(); fin(); }
+
+  $('leer-todo').addEventListener('click', () => leer([...resultados.querySelectorAll('article')]));
+  botonParar.addEventListener('click', parar);
+  botonPausar.addEventListener('click', () => {
+    if (speechSynthesis.paused) { speechSynthesis.resume(); botonPausar.textContent = 'Pausar'; }
+    else { speechSynthesis.pause(); botonPausar.textContent = 'Continuar'; }
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') parar(); });
+})();
+</script>
+</body>
+</html>
