@@ -1,5 +1,4 @@
-# Dataset, casillas preparadas (.npz) y modelos descartados: se regeneran (ver Brajedrez/docs/LEEME_tecnico.md)
-Brajedrez/datos/
+Brajedrez/datos/train/
 
 # Entorno local
 .venv/
@@ -17,3 +16,4 @@ Thumbs.db
 desktop.ini
 .DS_Store
 *.log
+Brajedrez/datos/casillas.npz
